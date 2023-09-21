@@ -1,0 +1,14 @@
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.GeneratedMSBuildEditorConfig.editorconfig
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.AssemblyInfoInputs.cache
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.AssemblyInfo.cs
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.csproj.CoreCompileInputs.cache
+/home/diicoyde/Banco-de-Dados/bin/Debug/net7.0/Banco-de-Dados
+/home/diicoyde/Banco-de-Dados/bin/Debug/net7.0/Banco-de-Dados.deps.json
+/home/diicoyde/Banco-de-Dados/bin/Debug/net7.0/Banco-de-Dados.runtimeconfig.json
+/home/diicoyde/Banco-de-Dados/bin/Debug/net7.0/Banco-de-Dados.dll
+/home/diicoyde/Banco-de-Dados/bin/Debug/net7.0/Banco-de-Dados.pdb
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.dll
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/refint/Banco-de-Dados.dll
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.pdb
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.genruntimeconfig.cache
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/ref/Banco-de-Dados.dll

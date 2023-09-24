@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 class Program
 {
     static void Main()
     {
         SimpleDB db = new SimpleDB();
-
         while (true)
         {
             Console.Write("Comando: ");

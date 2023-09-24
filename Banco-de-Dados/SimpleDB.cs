@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 
+
 public class SimpleDB
 {
     private Dictionary<int, string> database = new Dictionary<int, string>();

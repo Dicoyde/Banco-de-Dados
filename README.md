@@ -1,44 +1,41 @@
-# SimpleDB
+# Banco de Dados de Chave-Valor
 
-SimpleDB is a basic command-line interface (CLI) program written in C# that simulates a simple key-value database. It allows users to perform operations like inserting, removing, updating, and searching for objects in the database.
+Este é um projeto de banco de dados de chave-valor desenvolvido em C# que consiste em duas partes: o banco de dados em si e um cliente para interagir com ele.
 
-## Usage
+## Funcionalidades
 
-To run the program, compile and execute the `Program.cs` file in a C# environment.
+### Banco de Dados (Parte A e B)
+- Inserção de objetos no banco de dados.
+- Remoção de objetos do banco de dados.
+- Atualização de objetos no banco de dados.
+- Pesquisa de objetos no banco de dados.
+- Persistência dos objetos do banco de dados em um arquivo.
+- Interface por linha de comandos para realizar operações diretas no banco de dados.
+- Comunicação bidirecional com o programa cliente usando threads.
+- Processamento concorrente de requisições no banco de dados.
 
-Upon running, the program will prompt the user for commands. Valid commands include:
+### Cliente (Parte B)
+- Comando de inserção de objetos no banco de dados.
+- Comando de remoção de objetos no banco de dados.
+- Comando de atualização de objetos no banco de dados.
+- Comando de pesquisa de objetos no banco de dados.
+- Leitura das requisições do dispositivo de entrada padrão.
+- Escrita das respostas recebidas das requisições feitas ao banco de dados no dispositivo de saída padrão.
 
-- `insert chave valor`: Inserts an object with the specified key and value.
-- `remove chave`: Removes an object with the specified key.
-- `search chave`: Searches for an object with the specified key and prints its value.
-- `update chave novoValor`: Updates the value of an object with the specified key.
-- `save caminho`: Saves the database to a file specified by `caminho`.
-- `load caminho`: Loads the database from a file specified by `caminho`.
-- `quit`: Exits the program.
+## Como Usar
 
-## Examples
+1. Compile o código do banco de dados e do cliente.
+2. Execute o banco de dados.
+3. Execute o cliente para interagir com o banco de dados.
 
-- Inserting an object:
-Comando: insert 1 apple
-Output: Inserido
+## Comandos do Cliente
 
-- Removing an object:
-Comando: remove 1
-Output: Removido
+- `insert <key> <value>` - Insere um objeto no banco de dados.
+- `remove <key>` - Remove um objeto do banco de dados.
+- `search <key>` - Busca um objeto no banco de dados.
+- `update <key> <new_value>` - Atualiza um objeto no banco de dados.
+- `quit` - Encerra a execução do cliente.
 
-- Searching for an object:
-Comando: search 1
-Output: apple
+---
 
-- Updating an object:
-Comando: update 1 banana
-Output: Atualizado
-
-- Saving to a file:
-Comando: save database.txt
-Output: Dados salvos com sucesso!
-
-- Loading from a file:
-Comando: load database.txt
-Output: Dados carregados com sucesso!
-
+Este README fornece apenas uma visão geral do projeto. Consulte a documentação interna dos códigos para mais detalhes e instruções de uso.

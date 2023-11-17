@@ -1,160 +1,130 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
 
-class Program
+public class KeyValueClient
 {
-    static void Main()
+    private KeyValueDatabase database;
+
+    public KeyValueClient()
     {
-        SimpleDB db = new SimpleDB();
+        database = new KeyValueDatabase(10, "fifo");
+    }
 
-        Thread insertThread = new Thread(() => HandleInsert(db));
-        Thread removeThread = new Thread(() => HandleRemove(db));
-        Thread updateThread = new Thread(() => HandleUpdate(db));
-        Thread searchThread = new Thread(() => HandleSearch(db));
+    public void Run()
+    {
+        Console.WriteLine("Welcome to SimpleDB Client!");
+        Console.WriteLine("Type 'help' for available commands or 'quit' to exit.");
 
-        insertThread.Start();
-        removeThread.Start();
-        updateThread.Start();
-        searchThread.Start();
-
-        while (true)
+        string command;
+        do
         {
-            Console.Write("Comando: ");
-            string comando = Console.ReadLine();
+            Console.Write("> ");
+            command = Console.ReadLine();
+            ProcessCommand(command);
+        } while (command != "quit");
+    }
 
-            string[] partes = comando.Split(' ');
+    private void ProcessCommand(string command)
+    {
+        string[] tokens = command.Split(' ');
+        string operation = tokens[0];
 
-            if (partes.Length > 0)
-            {
-                string operacao = partes[0].ToLower();
-
-                switch (operacao)
+        switch (operation)
+        {
+            case "insert":
+                if (tokens.Length >= 3)
                 {
-                    case "save":
-                        if (partes.Length == 2)
-                        {
-                            db.SalvarEmArquivo(partes[1]);
-                            Console.WriteLine("Dados salvos com sucesso!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Comando inválido");
-                        }
-                        break;
-
-                    case "load":
-                        if (partes.Length == 2)
-                        {
-                            db.CarregarDeArquivo(partes[1]);
-                            Console.WriteLine("Dados carregados com sucesso!");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Comando inválido");
-                        }
-                        break;
-
-                    case "quit":
-                        return;
-
-                    default:
-                        Console.WriteLine("Comando inválido");
-                        break;
-                }
-            }
-        }
-    }
-
-
-    static void HandleInsert(SimpleDB db)
-    {
-        while (true)
-        {
-            Console.Write("Comando Insert (key value): ");
-            string comando = Console.ReadLine();
-
-            string[] partes = comando.Split(' ');
-
-            if (partes.Length == 3 && int.TryParse(partes[1], out int chaveInsercao))
-            {
-                db.InserirObjeto(chaveInsercao, partes[2]);
-                Console.WriteLine("Inserido");
-            }
-            else
-            {
-                Console.WriteLine("Comando inválido");
-            }
-        }
-    }
-
-    static void HandleRemove(SimpleDB db)
-    {
-        while (true)
-        {
-            Console.Write("Comando Remove (key): ");
-            string comando = Console.ReadLine();
-
-            string[] partes = comando.Split(' ');
-
-            if (partes.Length == 2 && int.TryParse(partes[1], out int chaveRemocao))
-            {
-                db.RemoverObjeto(chaveRemocao);
-                Console.WriteLine("Removido");
-            }
-            else
-            {
-                Console.WriteLine("Comando inválido");
-            }
-        }
-    }
-
-    static void HandleUpdate(SimpleDB db)
-    {
-        while (true)
-        {
-            Console.Write("Comando Update (key new-value): ");
-            string comando = Console.ReadLine();
-
-            string[] partes = comando.Split(' ');
-
-            if (partes.Length == 3 && int.TryParse(partes[1], out int chaveAtualizacao))
-            {
-                db.AtualizarObjeto(chaveAtualizacao, partes[2]);
-                Console.WriteLine("Atualizado");
-            }
-            else
-            {
-                Console.WriteLine("Comando inválido");
-            }
-        }
-    }
-
-    static void HandleSearch(SimpleDB db)
-    {
-        while (true)
-        {
-            Console.Write("Comando Search (key): ");
-            string comando = Console.ReadLine();
-
-            string[] partes = comando.Split(' ');
-
-            if (partes.Length == 2 && int.TryParse(partes[1], out int chaveBusca))
-            {
-                string valor = db.BuscarObjeto(chaveBusca);
-                if (valor != null)
-                {
-                    Console.WriteLine(valor);
+                    int key;
+                    if (int.TryParse(tokens[1], out key))
+                    {
+                        string value = string.Join(" ", tokens, 2, tokens.Length - 2);
+                        database.Insert(key, value);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid key. Please provide a valid integer key.");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Não encontrado");
+                    Console.WriteLine("Usage: insert <key> <value>");
                 }
-            }
-            else
-            {
-                Console.WriteLine("Comando inválido");
-            }
+                break;
+            case "remove":
+                if (tokens.Length == 2)
+                {
+                    int keyToRemove;
+                    if (int.TryParse(tokens[1], out keyToRemove))
+                    {
+                        database.Remove(keyToRemove);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid key. Please provide a valid integer key.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Usage: remove <key>");
+                }
+                break;
+            case "search":
+                if (tokens.Length == 2)
+                {
+                    int keyToSearch;
+                    if (int.TryParse(tokens[1], out keyToSearch))
+                    {
+                        string result = database.Search(keyToSearch);
+                        Console.WriteLine(result);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid key. Please provide a valid integer key.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Usage: search <key>");
+                }
+                break;
+            case "update":
+                if (tokens.Length >= 3)
+                {
+                    int keyToUpdate;
+                    if (int.TryParse(tokens[1], out keyToUpdate))
+                    {
+                        string newValue = string.Join(" ", tokens, 2, tokens.Length - 2);
+                        database.Update(keyToUpdate, newValue);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid key. Please provide a valid integer key.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Usage: update <key> <new_value>");
+                }
+                break;
+            case "quit":
+                Console.WriteLine("Exiting SimpleDB Client.");
+                break;
+            case "help":
+                Console.WriteLine("Available commands:");
+                Console.WriteLine("insert <key> <value> - Insert a new object into the database");
+                Console.WriteLine("remove <key> - Remove an object from the database");
+                Console.WriteLine("search <key> - Search for an object in the database");
+                Console.WriteLine("update <key> <new_value> - Update an object in the database");
+                Console.WriteLine("quit - Exit the client");
+                break;
+            default:
+                Console.WriteLine("Invalid command. Type 'help' for available commands.");
+                break;
         }
+    }
+
+    public static void Main()
+    {
+        KeyValueClient client = new KeyValueClient();
+        client.Run();
     }
 }

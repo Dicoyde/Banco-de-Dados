@@ -12,3 +12,4 @@
 /home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.pdb
 /home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.genruntimeconfig.cache
 /home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/ref/Banco-de-Dados.dll
+/home/diicoyde/Banco-de-Dados/obj/Debug/net7.0/Banco-de-Dados.sourcelink.json

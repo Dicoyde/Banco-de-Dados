@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "qGoYiG/M2n1effSdJytcWRaLQYF+Dj45hhe7EnMWgqxzPlYexUCHojEWkuBykF3okL9y9DQC8ADiJXoqYgDhTA==",
+  "dgSpecHash": "JVlRjNF1xeq+/mhOnYk0CAz2GAf+ozbudFEuVZUThXLz0epj7+dVEmcOi6G2dF+KIcyOPCdj4dg2ktMEMyFkOA==",
   "success": true,
   "projectFilePath": "/home/diicoyde/Banco-de-Dados/Banco-de-Dados.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/home/diicoyde/.nuget/packages/microsoft.netcore.app.ref/7.0.14/microsoft.netcore.app.ref.7.0.14.nupkg.sha512",
+    "/home/diicoyde/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.14/microsoft.aspnetcore.app.ref.7.0.14.nupkg.sha512",
+    "/home/diicoyde/.nuget/packages/microsoft.netcore.app.host.linux-x64/7.0.14/microsoft.netcore.app.host.linux-x64.7.0.14.nupkg.sha512"
+  ],
   "logs": []
 }

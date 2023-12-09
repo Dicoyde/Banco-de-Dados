@@ -1,41 +1,44 @@
-# SimpleDB - Banco de Dados de Chave-Valor
+# SimpleDB
 
-Este é um projeto de um banco de dados de chave-valor simples implementado em C#.
+SimpleDB is a basic command-line interface (CLI) program written in C# that simulates a simple key-value database. It allows users to perform operations like inserting, removing, updating, and searching for objects in the database.
 
-## Visão Geral
+## Usage
 
-O SimpleDB é um banco de dados que armazena pares de chave e valor, permitindo operações básicas como inserção, remoção, busca e atualização de dados. Ele também inclui um mecanismo de cache baseado no algoritmo LRU (Least Recently Used - Menos Recente Utilizado) para otimizar o acesso aos dados mais frequentemente usados.
+To run the program, compile and execute the `Program.cs` file in a C# environment.
 
-## Funcionalidades
+Upon running, the program will prompt the user for commands. Valid commands include:
 
-- **Inserção de Dados**: Adicione novos pares de chave e valor ao banco de dados.
-- **Remoção de Dados**: Remova pares de chave e valor existentes do banco de dados.
-- **Busca de Dados**: Busque valores associados a uma chave específica no banco de dados.
-- **Atualização de Dados**: Atualize os valores associados a uma chave existente no banco de dados.
-- **Mecanismo de Cache LRU**: O banco de dados mantém um cache para melhorar o acesso aos dados mais utilizados.
+- `insert chave valor`: Inserts an object with the specified key and value.
+- `remove chave`: Removes an object with the specified key.
+- `search chave`: Searches for an object with the specified key and prints its value.
+- `update chave novoValor`: Updates the value of an object with the specified key.
+- `save caminho`: Saves the database to a file specified by `caminho`.
+- `load caminho`: Loads the database from a file specified by `caminho`.
+- `quit`: Exits the program.
 
-## Requisitos
+## Examples
 
-- [.NET Framework](https://dotnet.microsoft.com/download) - Certifique-se de ter o .NET Framework instalado para executar o projeto.
+- Inserting an object:
+Comando: insert 1 apple
+Output: Inserido
 
-## Como Usar
+- Removing an object:
+Comando: remove 1
+Output: Removido
 
-1. **Clonar o Repositório**
+- Searching for an object:
+Comando: search 1
+Output: apple
 
-   ```bash
-   git clone https://github.com/seu-usuario/SimpleDB.git
-Compilar e Executar
+- Updating an object:
+Comando: update 1 banana
+Output: Atualizado
 
-Navegue até o diretório do projeto e execute:
+- Saving to a file:
+Comando: save database.txt
+Output: Dados salvos com sucesso!
 
-bash
-Copy code
-cd SimpleDB
-dotnet run
-Comandos Disponíveis
+- Loading from a file:
+Comando: load database.txt
+Output: Dados carregados com sucesso!
 
-insert <key> <value>: Insere um novo par de chave e valor no banco de dados.
-remove <key>: Remove um par de chave e valor do banco de dados.
-search <key>: Busca o valor associado a uma chave no banco de dados.
-update <key> <new_value>: Atualiza o valor associado a uma chave existente no banco de dados.
-quit: Sai do cliente SimpleDB.

@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 public class KeyValueRecord
 {
@@ -16,22 +13,17 @@ public class KeyValueDatabase
 {
     private Dictionary<int, string> database;
     private int cacheSize;
-    private string cacheReplacementPolicy;
     private List<int> cache;
+    private LinkedList<int> lruList; // Lista vinculada para o LRU
     private const string filePath = "simpledb.db";
-    private BlockingCollection<string> messageQueue;
-    private CancellationTokenSource cancellationTokenSource;
+    private Dictionary<int, int> agingDictionary = new Dictionary<int, int>();
 
-    public KeyValueDatabase(int cacheSize, string cacheReplacementPolicy)
+    public KeyValueDatabase(int cacheSize)
     {
         database = new Dictionary<int, string>();
         this.cacheSize = cacheSize;
-        this.cacheReplacementPolicy = cacheReplacementPolicy;
         cache = new List<int>();
-        messageQueue = new BlockingCollection<string>();
-        cancellationTokenSource = new CancellationTokenSource();
-
-        Task.Factory.StartNew(ProcessMessages, cancellationTokenSource.Token);
+        lruList = new LinkedList<int>();
     }
 
     public void Insert(int key, string value)
@@ -60,6 +52,8 @@ public class KeyValueDatabase
             database.Remove(key);
             RemoveFromFile(key);
             cache.Remove(key);
+            lruList.Remove(key); // Remover chave da lista LRU
+            agingDictionary.Remove(key); // Remover chave do dicionário de envelhecimento
             Console.WriteLine($"removed");
         }
         else
@@ -98,27 +92,15 @@ public class KeyValueDatabase
 
     private void EvictCache()
     {
-        int keyToRemove = -1;
-        switch (cacheReplacementPolicy)
-        {
-            case "fifo":
-                keyToRemove = cache.First();
-                break;
-            case "aging":
-                // Implement aging policy logic here
-                break;
-            case "lru":
-                keyToRemove = cache.First();
-                break;
-            default:
-                break;
-        }
+        int keyToRemove = lruList.First.Value; // Obtém o primeiro elemento da lista (menos recentemente usado)
 
         if (keyToRemove != -1)
         {
             database.Remove(keyToRemove);
             RemoveFromFile(keyToRemove);
             cache.Remove(keyToRemove);
+            lruList.RemoveFirst(); // Remove o item menos recentemente usado da lista LRU
+            agingDictionary.Remove(keyToRemove); // Remove a chave do dicionário de envelhecimento
         }
     }
 
@@ -127,7 +109,88 @@ public class KeyValueDatabase
         if (cache.Contains(key))
         {
             cache.Remove(key);
+            lruList.Remove(key); // Remover a chave da lista LRU
         }
+        else
+        {
+            if (cache.Count >= cacheSize)
+            {
+                EvictCache();
+            }
+        }
+
+        cache.Add(key);
+        lruList.AddLast(key); // Adicionar a chave à lista LRU no final (indicando uso mais recente)
+    }
+
+    private void EvictFIFOCache()
+    {
+        int keyToRemove = cache[0]; // Primeiro elemento adicionado é o mais antigo (FIFO)
+
+        if (keyToRemove != -1)
+        {
+            database.Remove(keyToRemove);
+            RemoveFromFile(keyToRemove);
+            cache.RemoveAt(0); // Remove o item mais antigo do cache (FIFO)
+            agingDictionary.Remove(keyToRemove); // Remove a chave do dicionário de envelhecimento
+        }
+    }
+
+    private void UpdateFIFOCache(int key)
+    {
+        if (cache.Contains(key))
+        {
+            cache.Remove(key);
+        }
+        else
+        {
+            if (cache.Count >= cacheSize)
+            {
+                EvictFIFOCache();
+            }
+        }
+
+        cache.Add(key);
+    }
+
+    private void EvictAgingCache()
+    {
+        int minAge = agingDictionary.Values.Min();
+        int keyToRemove = agingDictionary.First(x => x.Value == minAge).Key;
+
+        if (keyToRemove != -1)
+        {
+            database.Remove(keyToRemove);
+            RemoveFromFile(keyToRemove);
+            cache.Remove(keyToRemove);
+            agingDictionary.Remove(keyToRemove);
+        }
+    }
+
+    private void UpdateAgingCache(int key)
+    {
+        if (cache.Contains(key))
+        {
+            agingDictionary[key] = 0; // Reseta a idade do item para 0 (mais recentemente usado)
+        }
+        else
+        {
+            if (cache.Count >= cacheSize)
+            {
+                EvictAgingCache();
+            }
+        }
+
+        foreach (var item in agingDictionary.ToList())
+        {
+            agingDictionary[item.Key]++; // Aumenta a idade de todos os itens no cache
+        }
+
+        if (!agingDictionary.ContainsKey(key))
+        {
+            agingDictionary[key] = 0; // Adiciona o novo item com idade 0
+        }
+
         cache.Add(key);
     }
 
@@ -143,101 +206,5 @@ public class KeyValueDatabase
     {
         string[] lines = File.ReadAllLines(filePath);
         File.WriteAllLines(filePath, lines.Where(line => !line.StartsWith($"{key},")));
-    }
-
-    private void ProcessMessages()
-    {
-        foreach (var message in messageQueue.GetConsumingEnumerable())
-        {
-            string[] tokens = message.Split(' ');
-            string command = tokens[0];
-
-            switch (command)
-            {
-                case "insert":
-                    if (tokens.Length >= 3)
-                    {
-                        int key;
-                        if (int.TryParse(tokens[1], out key))
-                        {
-                            string value = string.Join(" ", tokens, 2, tokens.Length - 2);
-                            Insert(key, value);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid key. Please provide a valid integer key.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Usage: insert <key> <value>");
-                    }
-                    break;
-                case "remove":
-                    if (tokens.Length == 2)
-                    {
-                        int keyToRemove;
-                        if (int.TryParse(tokens[1], out keyToRemove))
-                        {
-                            Remove(keyToRemove);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid key. Please provide a valid integer key.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Usage: remove <key>");
-                    }
-                    break;
-                case "search":
-                    if (tokens.Length == 2)
-                    {
-                        int keyToSearch;
-                        if (int.TryParse(tokens[1], out keyToSearch))
-                        {
-                            string result = Search(keyToSearch);
-                            Console.WriteLine(result);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid key. Please provide a valid integer key.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Usage: search <key>");
-                    }
-                    break;
-                case "update":
-                    if (tokens.Length >= 3)
-                    {
-                        int keyToUpdate;
-                        if (int.TryParse(tokens[1], out keyToUpdate))
-                        {
-                            string newValue = string.Join(" ", tokens, 2, tokens.Length - 2);
-                            Update(keyToUpdate, newValue);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid key. Please provide a valid integer key.");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Usage: update <key> <new_value>");
-                    }
-                    break;
-                default:
-                    Console.WriteLine("Invalid command.");
-                    break;
-            }
-        }
-    }
-
-    public void StopDatabase()
-    {
-        cancellationTokenSource.Cancel();
     }
 }

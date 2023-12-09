@@ -1,12 +1,10 @@
-﻿using System;
-
-public class KeyValueClient
+﻿public class KeyValueClient
 {
     private KeyValueDatabase database;
 
     public KeyValueClient()
     {
-        database = new KeyValueDatabase(10, "fifo");
+        database = new KeyValueDatabase(10); // Definindo o tamanho do cache para 10
     }
 
     public void Run()
